@@ -1,0 +1,9 @@
+source,destination,date,passengers,expectedCount,description
+Karachi,Lahore,2025-10-15,1,2,Valid search - same day
+Islamabad,Peshawar,2025-10-16,2,1,Valid search - 2 passengers
+Lahore,Multan,2025-10-17,3,3,Valid search - 3 passengers
+Karachi,Karachi,2025-10-15,1,0,Invalid - same source and destination
+,Lahore,2025-10-15,1,0,Missing source city
+Lahore,,2025-10-15,1,0,Missing destination city
+Karachi,Lahore,,1,0,Missing travel date
+Karachi,Islamabad,2025-10-18,1,0,No flights on this date

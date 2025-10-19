@@ -1,0 +1,10 @@
+passengerFirstName,passengerLastName,email,phoneNumber,age,numberOfSeats,description
+Ahmed,Khan,ahmed@gmail.com,03001234567,28,1,Valid adult passenger - 1 seat
+Fatima,Ali,fatima@hotmail.com,03009876543,35,2,Valid adult passenger - 2 seats
+Hassan,Hassan,hassan@yahoo.com,03115555555,16,1,Valid child passenger
+Maria,Garcia,maria@email.com,03021111111,5,1,Valid child passenger
+Baby,Name,baby@gmail.com,03334444444,1,1,Valid infant passenger
+,Khan,invalid@gmail.com,03001234567,25,1,Missing first name
+Ahmed,,invalid@gmail.com,03001234567,25,1,Missing last name
+Ahmed,Khan,invalid@gmail.com,03001234567,-5,1,Negative age
+Ahmed,Khan,invalid@gmail.com,03001234567,200,1,Age over 150
