@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Payment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Flight Reservation System</a> &gt; <a href="index.source.html" class="el_package">model</a> &gt; <span class="el_source">Payment.java</span></div><h1>Payment.java</h1><pre class="source lang-java linenums">package model;
+
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.Objects;
+
+public class Payment {
+    private String paymentId;
+    private String reservationId;
+    private double amount;
+    private String cardNumber;
+    private String cvv;
+    private String expiryDate; // MM/YY format
+    private String status; // SUCCESS, FAILED, PENDING, REFUNDED
+    private LocalDateTime transactionDate;
+
+    public Payment(String paymentId, String reservationId, double amount,
+<span class="fc" id="L18">                   String cardNumber, String cvv, String expiryDate) {</span>
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        if (amount &lt;= 0) {</span>
+<span class="nc" id="L20">            throw new IllegalArgumentException(&quot;Amount must be positive&quot;);</span>
+        }
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        if (!isValidCardNumber(cardNumber)) {</span>
+<span class="fc" id="L23">            throw new IllegalArgumentException(&quot;Invalid card number&quot;);</span>
+        }
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        if (!isValidCVV(cvv)) {</span>
+<span class="fc" id="L26">            throw new IllegalArgumentException(&quot;Invalid CVV&quot;);</span>
+        }
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (!isValidExpiryDate(expiryDate)) {</span>
+<span class="fc" id="L29">            throw new IllegalArgumentException(&quot;Invalid expiry date&quot;);</span>
+        }
+
+<span class="fc" id="L32">        this.paymentId = paymentId;</span>
+<span class="fc" id="L33">        this.reservationId = reservationId;</span>
+<span class="fc" id="L34">        this.amount = amount;</span>
+<span class="fc" id="L35">        this.cardNumber = maskCardNumber(cardNumber);</span>
+<span class="fc" id="L36">        this.cvv = cvv;</span>
+<span class="fc" id="L37">        this.expiryDate = expiryDate;</span>
+<span class="fc" id="L38">        this.status = &quot;PENDING&quot;;</span>
+<span class="fc" id="L39">        this.transactionDate = LocalDateTime.now();</span>
+<span class="fc" id="L40">    }</span>
+
+<span class="fc" id="L42">    public String getPaymentId() { return paymentId; }</span>
+<span class="fc" id="L43">    public String getReservationId() { return reservationId; }</span>
+<span class="fc" id="L44">    public double getAmount() { return amount; }</span>
+<span class="nc" id="L45">    public String getCardNumber() { return cardNumber; }</span>
+<span class="fc" id="L46">    public String getStatus() { return status; }</span>
+<span class="nc" id="L47">    public LocalDateTime getTransactionDate() { return transactionDate; }</span>
+
+    /**
+     * Validates credit card number using Luhn algorithm
+     * Supports Visa, Mastercard, American Express, Discover, etc.
+     */
+    public static boolean isValidCardNumber(String cardNumber) {
+<span class="pc bpc" id="L54" title="2 of 4 branches missed.">        if (cardNumber == null || cardNumber.trim().isEmpty()) {</span>
+<span class="nc" id="L55">            return false;</span>
+        }
+        
+        // Remove all non-digit characters (spaces, dashes, etc.)
+<span class="fc" id="L59">        String digits = cardNumber.replaceAll(&quot;\\D&quot;, &quot;&quot;);</span>
+        
+        // Check length (13-19 digits for most cards)
+<span class="fc bfc" id="L62" title="All 4 branches covered.">        if (digits.length() &lt; 13 || digits.length() &gt; 19) {</span>
+<span class="fc" id="L63">            return false;</span>
+        }
+        
+        // Apply Luhn algorithm
+<span class="fc" id="L67">        return luhnCheck(digits);</span>
+    }
+
+    /**
+     * Luhn Algorithm Implementation
+     * Used to validate credit card numbers
+     */
+    private static boolean luhnCheck(String cardNumber) {
+<span class="fc" id="L75">        int sum = 0;</span>
+<span class="fc" id="L76">        boolean alternate = false;</span>
+        
+        // Process digits from right to left
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (int i = cardNumber.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L80">            int digit = Character.getNumericValue(cardNumber.charAt(i));</span>
+            
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            if (alternate) {</span>
+<span class="fc" id="L83">                digit *= 2;</span>
+                // If result is two digits, add them together
+<span class="fc bfc" id="L85" title="All 2 branches covered.">                if (digit &gt; 9) {</span>
+<span class="fc" id="L86">                    digit = (digit / 10) + (digit % 10);</span>
+                }
+            }
+            
+<span class="fc" id="L90">            sum += digit;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            alternate = !alternate;</span>
+        }
+        
+        // Valid if sum is divisible by 10
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        return (sum % 10) == 0;</span>
+    }
+
+    /**
+     * Validates CVV (Card Verification Value)
+     * Must be 3 digits for Visa/MC or 4 digits for Amex
+     */
+    public static boolean isValidCVV(String cvv) {
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (cvv == null) {</span>
+<span class="nc" id="L104">            return false;</span>
+        }
+        // CVV must be 3 or 4 digits only
+<span class="fc" id="L107">        return cvv.matches(&quot;^\\d{3,4}$&quot;);</span>
+    }
+
+    /**
+     * Validates expiry date in MM/YY format
+     * Card must not be expired
+     */
+    public static boolean isValidExpiryDate(String expiryDate) {
+<span class="pc bpc" id="L115" title="1 of 4 branches missed.">        if (expiryDate == null || !expiryDate.matches(&quot;^(0[1-9]|1[0-2])/\\d{2}$&quot;)) {</span>
+<span class="fc" id="L116">            return false;</span>
+        }
+        
+        try {
+<span class="fc" id="L120">            String[] parts = expiryDate.split(&quot;/&quot;);</span>
+<span class="fc" id="L121">            int month = Integer.parseInt(parts[0]);</span>
+<span class="fc" id="L122">            int year = Integer.parseInt(parts[1]) + 2000; // Convert YY to YYYY</span>
+            
+            // Create YearMonth for comparison
+<span class="fc" id="L125">            YearMonth cardExpiry = YearMonth.of(year, month);</span>
+<span class="fc" id="L126">            YearMonth currentYearMonth = YearMonth.now();</span>
+            
+            // Card must not be expired (same month or future)
+<span class="fc bfc" id="L129" title="All 2 branches covered.">            return cardExpiry.compareTo(currentYearMonth) &gt;= 0;</span>
+            
+<span class="nc" id="L131">        } catch (Exception e) {</span>
+<span class="nc" id="L132">            return false;</span>
+        }
+    }
+
+    /**
+     * Masks card number for security
+     * Shows first 4 and last 4 digits only
+     */
+    private static String maskCardNumber(String cardNumber) {
+<span class="fc" id="L141">        String digits = cardNumber.replaceAll(&quot;\\D&quot;, &quot;&quot;);</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (digits.length() &lt; 8) {</span>
+<span class="nc" id="L143">            return &quot;****&quot;;</span>
+        }
+<span class="fc" id="L145">        return digits.substring(0, 4) + &quot;****&quot; + digits.substring(digits.length() - 4);</span>
+    }
+
+    public void processPayment() {
+<span class="fc" id="L149">        this.status = &quot;SUCCESS&quot;;</span>
+<span class="fc" id="L150">    }</span>
+
+    public void failPayment() {
+<span class="fc" id="L153">        this.status = &quot;FAILED&quot;;</span>
+<span class="fc" id="L154">    }</span>
+
+    public void refund() {
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (!&quot;SUCCESS&quot;.equals(status)) {</span>
+<span class="nc" id="L158">            throw new IllegalStateException(&quot;Cannot refund unsuccessful payment&quot;);</span>
+        }
+<span class="fc" id="L160">        this.status = &quot;REFUNDED&quot;;</span>
+<span class="fc" id="L161">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L165" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L166" title="All 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="nc" id="L167">        Payment payment = (Payment) o;</span>
+<span class="nc" id="L168">        return Objects.equals(paymentId, payment.paymentId);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L173">        return Objects.hash(paymentId);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L178">        return &quot;Payment{&quot; +</span>
+                &quot;paymentId='&quot; + paymentId + '\'' +
+                &quot;, reservationId='&quot; + reservationId + '\'' +
+                &quot;, amount=&quot; + amount +
+                &quot;, status='&quot; + status + '\'' +
+                &quot;, transactionDate=&quot; + transactionDate +
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

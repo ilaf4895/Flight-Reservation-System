@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FlightSearchEngine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Flight Reservation System</a> &gt; <a href="index.source.html" class="el_package">service</a> &gt; <span class="el_source">FlightSearchEngine.java</span></div><h1>FlightSearchEngine.java</h1><pre class="source lang-java linenums">package service;
+
+import model.Flight;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class FlightSearchEngine {
+    private List&lt;Flight&gt; flightDatabase;
+
+<span class="fc" id="L12">    public FlightSearchEngine() {</span>
+<span class="fc" id="L13">        this.flightDatabase = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L14">    }</span>
+
+    public void addFlight(Flight flight) {
+<span class="fc bfc" id="L17" title="All 2 branches covered.">        if (flight == null) {</span>
+<span class="fc" id="L18">            throw new IllegalArgumentException(&quot;Flight cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        if (flightDatabase.contains(flight)) {</span>
+<span class="fc" id="L21">            throw new IllegalArgumentException(&quot;Flight already exists&quot;);</span>
+        }
+<span class="fc" id="L23">        flightDatabase.add(flight);</span>
+<span class="fc" id="L24">    }</span>
+
+    public List&lt;Flight&gt; searchFlights(String source, String destination, LocalDateTime date) {
+<span class="fc bfc" id="L27" title="All 4 branches covered.">        if (source == null || source.trim().isEmpty()) {</span>
+<span class="fc" id="L28">            throw new IllegalArgumentException(&quot;Source city cannot be empty&quot;);</span>
+        }
+<span class="fc bfc" id="L30" title="All 4 branches covered.">        if (destination == null || destination.trim().isEmpty()) {</span>
+<span class="fc" id="L31">            throw new IllegalArgumentException(&quot;Destination city cannot be empty&quot;);</span>
+        }
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (date == null) {</span>
+<span class="fc" id="L34">            throw new IllegalArgumentException(&quot;Travel date cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (source.equalsIgnoreCase(destination)) {</span>
+<span class="fc" id="L37">            throw new IllegalArgumentException(&quot;Source and destination cannot be same&quot;);</span>
+        }
+
+<span class="fc" id="L40">        return flightDatabase.stream()</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">                .filter(f -&gt; f.getSourceCity().equalsIgnoreCase(source) &amp;&amp;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                           f.getDestinationCity().equalsIgnoreCase(destination) &amp;&amp;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">                           isSameDay(f.getDepartureTime(), date) &amp;&amp;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                           f.getAvailableSeats() &gt; 0)</span>
+<span class="fc" id="L45">                .collect(Collectors.toList());</span>
+    }
+
+    public List&lt;Flight&gt; searchFlightsByAirline(String source, String destination,
+                                               LocalDateTime date, String airline) {
+<span class="fc" id="L50">        List&lt;Flight&gt; flights = searchFlights(source, destination, date);</span>
+<span class="fc" id="L51">        return flights.stream()</span>
+<span class="fc" id="L52">                .filter(f -&gt; f.getAirline().equalsIgnoreCase(airline))</span>
+<span class="fc" id="L53">                .collect(Collectors.toList());</span>
+    }
+
+    public List&lt;Flight&gt; searchFlightsByPriceRange(String source, String destination,
+                                                   LocalDateTime date, double minPrice, double maxPrice) {
+<span class="fc bfc" id="L58" title="All 4 branches covered.">        if (minPrice &lt; 0 || maxPrice &lt; 0) {</span>
+<span class="fc" id="L59">            throw new IllegalArgumentException(&quot;Price cannot be negative&quot;);</span>
+        }
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (minPrice &gt; maxPrice) {</span>
+<span class="fc" id="L62">            throw new IllegalArgumentException(&quot;Min price cannot be greater than max price&quot;);</span>
+        }
+
+<span class="fc" id="L65">        List&lt;Flight&gt; flights = searchFlights(source, destination, date);</span>
+<span class="fc" id="L66">        return flights.stream()</span>
+<span class="fc bfc" id="L67" title="All 4 branches covered.">                .filter(f -&gt; f.getPricePerSeat() &gt;= minPrice &amp;&amp; f.getPricePerSeat() &lt;= maxPrice)</span>
+<span class="fc" id="L68">                .collect(Collectors.toList());</span>
+    }
+
+    public List&lt;Flight&gt; searchFlightsBySeatsAvailable(String source, String destination,
+                                                       LocalDateTime date, int requiredSeats) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (requiredSeats &lt;= 0) {</span>
+<span class="fc" id="L74">            throw new IllegalArgumentException(&quot;Required seats must be positive&quot;);</span>
+        }
+
+<span class="fc" id="L77">        List&lt;Flight&gt; flights = searchFlights(source, destination, date);</span>
+<span class="fc" id="L78">        return flights.stream()</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">                .filter(f -&gt; f.getAvailableSeats() &gt;= requiredSeats)</span>
+<span class="fc" id="L80">                .collect(Collectors.toList());</span>
+    }
+
+    public Flight findFlightById(String flightId) {
+<span class="fc bfc" id="L84" title="All 4 branches covered.">        if (flightId == null || flightId.trim().isEmpty()) {</span>
+<span class="fc" id="L85">            throw new IllegalArgumentException(&quot;Flight ID cannot be empty&quot;);</span>
+        }
+
+<span class="fc" id="L88">        return flightDatabase.stream()</span>
+<span class="fc" id="L89">                .filter(f -&gt; f.getFlightId().equalsIgnoreCase(flightId))</span>
+<span class="fc" id="L90">                .findFirst()</span>
+<span class="fc" id="L91">                .orElse(null);</span>
+    }
+
+    public int getTotalFlights() {
+<span class="fc" id="L95">        return flightDatabase.size();</span>
+    }
+
+    private boolean isSameDay(LocalDateTime dateTime1, LocalDateTime dateTime2) {
+<span class="fc" id="L99">        return dateTime1.toLocalDate().equals(dateTime2.toLocalDate());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

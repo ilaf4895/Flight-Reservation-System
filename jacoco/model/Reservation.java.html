@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Reservation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Flight Reservation System</a> &gt; <a href="index.source.html" class="el_package">model</a> &gt; <span class="el_source">Reservation.java</span></div><h1>Reservation.java</h1><pre class="source lang-java linenums">package model;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class Reservation {
+    private String reservationId;
+    private Flight flight;
+    private List&lt;Passenger&gt; passengers;
+    private double totalPrice;
+    private String status; // PENDING, CONFIRMED, CANCELLED
+    private LocalDateTime bookingDate;
+    private String paymentId;
+
+<span class="fc" id="L17">    public Reservation(String reservationId, Flight flight) {</span>
+<span class="fc" id="L18">        this.reservationId = reservationId;</span>
+<span class="fc" id="L19">        this.flight = flight;</span>
+<span class="fc" id="L20">        this.passengers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L21">        this.status = &quot;PENDING&quot;;</span>
+<span class="fc" id="L22">        this.bookingDate = LocalDateTime.now();</span>
+<span class="fc" id="L23">    }</span>
+
+<span class="fc" id="L25">    public String getReservationId() { return reservationId; }</span>
+<span class="fc" id="L26">    public Flight getFlight() { return flight; }</span>
+<span class="fc" id="L27">    public List&lt;Passenger&gt; getPassengers() { return passengers; }</span>
+<span class="fc" id="L28">    public double getTotalPrice() { return totalPrice; }</span>
+<span class="fc" id="L29">    public String getStatus() { return status; }</span>
+<span class="nc" id="L30">    public LocalDateTime getBookingDate() { return bookingDate; }</span>
+<span class="fc" id="L31">    public String getPaymentId() { return paymentId; }</span>
+
+    public void addPassenger(Passenger passenger) {
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if (passenger == null) {</span>
+<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;Passenger cannot be null&quot;);</span>
+        }
+<span class="fc" id="L37">        passengers.add(passenger);</span>
+<span class="fc" id="L38">        calculateTotalPrice();</span>
+<span class="fc" id="L39">    }</span>
+
+    public void removePassenger(Passenger passenger) {
+<span class="fc" id="L42">        passengers.remove(passenger);</span>
+<span class="fc" id="L43">        calculateTotalPrice();</span>
+<span class="fc" id="L44">    }</span>
+
+    public int getNumberOfPassengers() {
+<span class="fc" id="L47">        return passengers.size();</span>
+    }
+
+    private void calculateTotalPrice() {
+<span class="fc" id="L51">        this.totalPrice = flight.getPricePerSeat() * passengers.size();</span>
+<span class="fc" id="L52">    }</span>
+
+    public void confirm(String paymentId) {
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">        if (paymentId == null || paymentId.trim().isEmpty()) {</span>
+<span class="nc" id="L56">            throw new IllegalArgumentException(&quot;Payment ID cannot be empty&quot;);</span>
+        }
+<span class="fc" id="L58">        this.status = &quot;CONFIRMED&quot;;</span>
+<span class="fc" id="L59">        this.paymentId = paymentId;</span>
+<span class="fc" id="L60">    }</span>
+
+    public void cancel() {
+<span class="fc" id="L63">        this.status = &quot;CANCELLED&quot;;</span>
+<span class="fc" id="L64">    }</span>
+
+    public boolean isConfirmed() {
+<span class="fc" id="L67">        return &quot;CONFIRMED&quot;.equals(status);</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L73" title="2 of 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L74">        Reservation that = (Reservation) o;</span>
+<span class="fc" id="L75">        return Objects.equals(reservationId, that.reservationId);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L80">        return Objects.hash(reservationId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

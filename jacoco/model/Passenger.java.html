@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Passenger.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Flight Reservation System</a> &gt; <a href="index.source.html" class="el_package">model</a> &gt; <span class="el_source">Passenger.java</span></div><h1>Passenger.java</h1><pre class="source lang-java linenums">package model;
+
+import java.util.Objects;
+
+public class Passenger {
+    private String passengerId;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
+    private int age;
+
+    public Passenger(String passengerId, String firstName, String lastName,
+<span class="fc" id="L14">                     String email, String phoneNumber, int age) {</span>
+<span class="pc bpc" id="L15" title="2 of 4 branches missed.">        if (firstName == null || firstName.trim().isEmpty()) {</span>
+<span class="nc" id="L16">            throw new IllegalArgumentException(&quot;First name cannot be empty&quot;);</span>
+        }
+<span class="pc bpc" id="L18" title="2 of 4 branches missed.">        if (lastName == null || lastName.trim().isEmpty()) {</span>
+<span class="nc" id="L19">            throw new IllegalArgumentException(&quot;Last name cannot be empty&quot;);</span>
+        }
+<span class="pc bpc" id="L21" title="2 of 4 branches missed.">        if (age &lt; 0 || age &gt; 150) {</span>
+<span class="nc" id="L22">            throw new IllegalArgumentException(&quot;Age must be between 0 and 150&quot;);</span>
+        }
+
+<span class="fc" id="L25">        this.passengerId = passengerId;</span>
+<span class="fc" id="L26">        this.firstName = firstName;</span>
+<span class="fc" id="L27">        this.lastName = lastName;</span>
+<span class="fc" id="L28">        this.email = email;</span>
+<span class="fc" id="L29">        this.phoneNumber = phoneNumber;</span>
+<span class="fc" id="L30">        this.age = age;</span>
+<span class="fc" id="L31">    }</span>
+
+<span class="nc" id="L33">    public String getPassengerId() { return passengerId; }</span>
+<span class="nc" id="L34">    public String getFirstName() { return firstName; }</span>
+<span class="nc" id="L35">    public String getLastName() { return lastName; }</span>
+<span class="fc" id="L36">    public String getEmail() { return email; }</span>
+<span class="nc" id="L37">    public String getPhoneNumber() { return phoneNumber; }</span>
+<span class="nc" id="L38">    public int getAge() { return age; }</span>
+
+    public String getFullName() {
+<span class="nc" id="L41">        return firstName + &quot; &quot; + lastName;</span>
+    }
+
+    public boolean isAdult() {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        return age &gt;= 18;</span>
+    }
+
+    public boolean isChild() {
+<span class="nc bnc" id="L49" title="All 4 branches missed.">        return age &gt;= 2 &amp;&amp; age &lt; 18;</span>
+    }
+
+    public boolean isInfant() {
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        return age &lt; 2;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L59" title="2 of 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L60">        Passenger passenger = (Passenger) o;</span>
+<span class="fc" id="L61">        return Objects.equals(passengerId, passenger.passengerId);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L66">        return Objects.hash(passengerId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

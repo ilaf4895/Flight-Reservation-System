@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Flight Reservation System</a> &gt; <a href="index.source.html" class="el_package">service</a> &gt; <span class="el_source">ReservationManager.java</span></div><h1>ReservationManager.java</h1><pre class="source lang-java linenums">package service;
+
+import model.Flight;
+import model.Passenger;
+import model.Reservation;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ReservationManager {
+    private List&lt;Reservation&gt; reservations;
+<span class="fc" id="L11">    private int reservationCounter = 1000;</span>
+
+<span class="fc" id="L13">    public ReservationManager() {</span>
+<span class="fc" id="L14">        this.reservations = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L15">    }</span>
+
+    public Reservation createReservation(Flight flight) {
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (flight == null) {</span>
+<span class="fc" id="L19">            throw new IllegalArgumentException(&quot;Flight cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (flight.getAvailableSeats() &lt;= 0) {</span>
+<span class="fc" id="L22">            throw new IllegalStateException(&quot;No available seats on this flight&quot;);</span>
+        }
+
+<span class="fc" id="L25">        String reservationId = &quot;RES&quot; + (++reservationCounter);</span>
+<span class="fc" id="L26">        Reservation reservation = new Reservation(reservationId, flight);</span>
+<span class="fc" id="L27">        reservations.add(reservation);</span>
+<span class="fc" id="L28">        return reservation;</span>
+    }
+
+    public void addPassengerToReservation(Reservation reservation, Passenger passenger) {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (reservation == null) {</span>
+<span class="fc" id="L33">            throw new IllegalArgumentException(&quot;Reservation cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (passenger == null) {</span>
+<span class="fc" id="L36">            throw new IllegalArgumentException(&quot;Passenger cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (reservation.isConfirmed()) {</span>
+<span class="fc" id="L39">            throw new IllegalStateException(&quot;Cannot modify confirmed reservation&quot;);</span>
+        }
+
+<span class="fc" id="L42">        reservation.addPassenger(passenger);</span>
+<span class="fc" id="L43">    }</span>
+
+    public void removePassengerFromReservation(Reservation reservation, Passenger passenger) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (reservation == null) {</span>
+<span class="fc" id="L47">            throw new IllegalArgumentException(&quot;Reservation cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (passenger == null) {</span>
+<span class="fc" id="L50">            throw new IllegalArgumentException(&quot;Passenger cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (reservation.isConfirmed()) {</span>
+<span class="fc" id="L53">            throw new IllegalStateException(&quot;Cannot modify confirmed reservation&quot;);</span>
+        }
+
+<span class="fc" id="L56">        reservation.removePassenger(passenger);</span>
+<span class="fc" id="L57">    }</span>
+
+    public boolean confirmReservation(Reservation reservation, String paymentId) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (reservation == null) {</span>
+<span class="fc" id="L61">            throw new IllegalArgumentException(&quot;Reservation cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L63" title="All 4 branches covered.">        if (paymentId == null || paymentId.trim().isEmpty()) {</span>
+<span class="fc" id="L64">            throw new IllegalArgumentException(&quot;Payment ID cannot be empty&quot;);</span>
+        }
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (reservation.getNumberOfPassengers() == 0) {</span>
+<span class="fc" id="L67">            throw new IllegalStateException(&quot;Cannot confirm reservation without passengers&quot;);</span>
+        }
+
+<span class="fc" id="L70">        Flight flight = reservation.getFlight();</span>
+<span class="fc" id="L71">        int numberOfPassengers = reservation.getNumberOfPassengers();</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (flight.bookSeats(numberOfPassengers)) {</span>
+<span class="fc" id="L74">            reservation.confirm(paymentId);</span>
+<span class="fc" id="L75">            return true;</span>
+        }
+<span class="fc" id="L77">        return false;</span>
+    }
+
+    public boolean cancelReservation(String reservationId) {
+<span class="fc bfc" id="L81" title="All 4 branches covered.">        if (reservationId == null || reservationId.trim().isEmpty()) {</span>
+<span class="fc" id="L82">            throw new IllegalArgumentException(&quot;Reservation ID cannot be empty&quot;);</span>
+        }
+
+<span class="fc" id="L85">        Reservation reservation = findReservationById(reservationId);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (reservation == null) {</span>
+<span class="fc" id="L87">            return false;</span>
+        }
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (!reservation.isConfirmed()) {</span>
+<span class="fc" id="L90">            throw new IllegalStateException(&quot;Only confirmed reservations can be cancelled&quot;);</span>
+        }
+
+<span class="fc" id="L93">        reservation.getFlight().cancelSeats(reservation.getNumberOfPassengers());</span>
+<span class="fc" id="L94">        reservation.cancel();</span>
+<span class="fc" id="L95">        return true;</span>
+    }
+
+    public Reservation findReservationById(String reservationId) {
+<span class="fc bfc" id="L99" title="All 4 branches covered.">        if (reservationId == null || reservationId.trim().isEmpty()) {</span>
+<span class="fc" id="L100">            throw new IllegalArgumentException(&quot;Reservation ID cannot be empty&quot;);</span>
+        }
+
+<span class="fc" id="L103">        return reservations.stream()</span>
+<span class="fc" id="L104">                .filter(r -&gt; r.getReservationId().equals(reservationId))</span>
+<span class="fc" id="L105">                .findFirst()</span>
+<span class="fc" id="L106">                .orElse(null);</span>
+    }
+
+    public List&lt;Reservation&gt; getReservationsByPassenger(String passengerEmail) {
+<span class="fc bfc" id="L110" title="All 4 branches covered.">        if (passengerEmail == null || passengerEmail.trim().isEmpty()) {</span>
+<span class="fc" id="L111">            throw new IllegalArgumentException(&quot;Passenger email cannot be empty&quot;);</span>
+        }
+
+<span class="fc" id="L114">        List&lt;Reservation&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for (Reservation reservation : reservations) {</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            for (Passenger passenger : reservation.getPassengers()) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">                if (passenger.getEmail().equalsIgnoreCase(passengerEmail)) {</span>
+<span class="fc" id="L118">                    result.add(reservation);</span>
+<span class="fc" id="L119">                    break;</span>
+                }
+<span class="fc" id="L121">            }</span>
+<span class="fc" id="L122">        }</span>
+<span class="fc" id="L123">        return result;</span>
+    }
+
+    public int getTotalReservations() {
+<span class="fc" id="L127">        return reservations.size();</span>
+    }
+
+    public int getConfirmedReservations() {
+<span class="fc" id="L131">        return (int) reservations.stream()</span>
+<span class="fc" id="L132">                .filter(Reservation::isConfirmed)</span>
+<span class="fc" id="L133">                .count();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
