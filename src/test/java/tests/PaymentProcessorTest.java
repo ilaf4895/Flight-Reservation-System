@@ -332,7 +332,7 @@ public class PaymentProcessorTest {
     }
     
     // ==================== PARAMETERIZED TESTS ====================
-
+    
 //    @ParameterizedTest(name = "Test {index}: Amount={0}, Card={1}, CVV={2}, Expiry={3}")
 //    @CsvSource({
 //        "5000, 4532015112830366, 123, 12/26, Valid Visa card",
@@ -344,17 +344,17 @@ public class PaymentProcessorTest {
 //        "750, 4539319503436, 456, 12/26, 13-digit Visa card"
 //    })
 //    @DisplayName("Parameterized - Valid Payment Scenarios")
-//    void testProcessPayment_ValidScenarios(double amount, String cardNumber,
+//    void testProcessPayment_ValidScenarios(double amount, String cardNumber, 
 //                                           String cvv, String expiryDate, String description) {
 //        Payment payment = paymentProcessor.processPayment(
 //            "RES_PARAM_" + amount, amount, cardNumber, cvv, expiryDate
 //        );
-//
+//        
 //        assertNotNull(payment, description);
 //        assertEquals("SUCCESS", payment.getStatus(), description);
 //        assertEquals(amount, payment.getAmount(), description);
 //    }
-
+    
     @ParameterizedTest(name = "Test {index}: Invalid Amount={0}")
     @ValueSource(doubles = {-100.0, -0.01, 0.0, -1000.0, -99999.99})
     @DisplayName("Parameterized - Invalid Amount Values")
@@ -366,7 +366,7 @@ public class PaymentProcessorTest {
             "Should throw exception for amount: " + amount
         );
     }
-
+    
     @ParameterizedTest(name = "Test {index}: Invalid Card={0}")
     @ValueSource(strings = {
         "123456789",           // Too short
@@ -384,7 +384,7 @@ public class PaymentProcessorTest {
             "Should throw exception for card: " + cardNumber
         );
     }
-
+    
     @ParameterizedTest(name = "Test {index}: Invalid CVV={0}")
     @ValueSource(strings = {"1", "12", "12345", "123a", "abc", ""})
     @DisplayName("Parameterized - Invalid CVV Values")
@@ -396,7 +396,7 @@ public class PaymentProcessorTest {
             "Should throw exception for CVV: " + cvv
         );
     }
-
+    
     @ParameterizedTest(name = "Test {index}: Invalid Expiry={0}")
     @CsvSource({
         "13/26, Invalid month 13",
@@ -416,29 +416,29 @@ public class PaymentProcessorTest {
             description
         );
     }
-
+    
     // ==================== REFUND PAYMENT TESTS ====================
-
+    
     @Test
     @DisplayName("Refund - Successful Payment Refund")
     void testRefundPayment_Success() {
         Payment payment = paymentProcessor.processPayment(
             "RES_REF001", 5000.0, "4532015112830366", "123", "12/26"
         );
-
+        
         boolean refunded = paymentProcessor.refundPayment(payment.getPaymentId());
-
+        
         assertTrue(refunded);
         assertEquals("REFUNDED", payment.getStatus());
     }
-
+    
     @Test
     @DisplayName("Refund - Non-existent Payment")
     void testRefundPayment_NonExistent() {
         boolean refunded = paymentProcessor.refundPayment("PAY_NONEXISTENT");
         assertFalse(refunded);
     }
-
+    
     @Test
     @DisplayName("Refund - Null Payment ID")
     void testRefundPayment_NullPaymentId() {
@@ -446,7 +446,7 @@ public class PaymentProcessorTest {
             () -> paymentProcessor.refundPayment(null)
         );
     }
-
+    
     @Test
     @DisplayName("Refund - Empty Payment ID")
     void testRefundPayment_EmptyPaymentId() {
@@ -454,29 +454,29 @@ public class PaymentProcessorTest {
             () -> paymentProcessor.refundPayment("   ")
         );
     }
-
+    
     // ==================== FIND PAYMENT TESTS ====================
-
+    
     @Test
     @DisplayName("Find Payment - Valid Payment ID")
     void testFindPaymentById_Valid() {
         Payment payment = paymentProcessor.processPayment(
             "RES_FIND001", 5000.0, "4532015112830366", "123", "12/26"
         );
-
+        
         Payment found = paymentProcessor.findPaymentById(payment.getPaymentId());
-
+        
         assertNotNull(found);
         assertEquals(payment.getPaymentId(), found.getPaymentId());
     }
-
+    
     @Test
     @DisplayName("Find Payment - Non-existent Payment ID")
     void testFindPaymentById_NonExistent() {
         Payment found = paymentProcessor.findPaymentById("PAY_NONEXISTENT");
         assertNull(found);
     }
-
+    
     @Test
     @DisplayName("Find Payment - Null Payment ID")
     void testFindPaymentById_NullPaymentId() {
@@ -484,7 +484,7 @@ public class PaymentProcessorTest {
             () -> paymentProcessor.findPaymentById(null)
         );
     }
-
+    
     @Test
     @DisplayName("Find Payment - Empty Payment ID")
     void testFindPaymentById_EmptyPaymentId() {
@@ -492,29 +492,29 @@ public class PaymentProcessorTest {
             () -> paymentProcessor.findPaymentById("")
         );
     }
-
+    
     // ==================== GET PAYMENTS BY RESERVATION TESTS ====================
-
+    
     @Test
     @DisplayName("Get Payments - Multiple Payments for Same Reservation")
     void testGetPaymentsByReservation_MultiplePayments() {
         paymentProcessor.processPayment("RES001", 5000.0, "4532015112830366", "123", "12/26");
         paymentProcessor.processPayment("RES001", 3000.0, "5105105105105100", "456", "01/27");
         paymentProcessor.processPayment("RES002", 2000.0, "378282246310005", "1234", "06/26");
-
+        
         List<Payment> payments = paymentProcessor.getPaymentsByReservation("RES001");
-
+        
         assertEquals(2, payments.size());
         assertTrue(payments.stream().allMatch(p -> p.getReservationId().equals("RES001")));
     }
-
+    
     @Test
     @DisplayName("Get Payments - No Payments for Reservation")
     void testGetPaymentsByReservation_NoPayments() {
         List<Payment> payments = paymentProcessor.getPaymentsByReservation("RES_NONE");
         assertTrue(payments.isEmpty());
     }
-
+    
     @Test
     @DisplayName("Get Payments - Null Reservation ID")
     void testGetPaymentsByReservation_NullReservationId() {
@@ -522,7 +522,7 @@ public class PaymentProcessorTest {
             () -> paymentProcessor.getPaymentsByReservation(null)
         );
     }
-
+    
     @Test
     @DisplayName("Get Payments - Empty Reservation ID")
     void testGetPaymentsByReservation_EmptyReservationId() {
@@ -530,75 +530,75 @@ public class PaymentProcessorTest {
             () -> paymentProcessor.getPaymentsByReservation("  ")
         );
     }
-
+    
     // ==================== STATISTICS TESTS ====================
-
+    
     @Test
     @DisplayName("Statistics - Total Payments Count")
     void testGetTotalPayments() {
         assertEquals(0, paymentProcessor.getTotalPayments());
-
+        
         paymentProcessor.processPayment("RES001", 5000.0, "4532015112830366", "123", "12/26");
         paymentProcessor.processPayment("RES002", 3000.0, "5105105105105100", "456", "01/27");
-
+        
         assertEquals(2, paymentProcessor.getTotalPayments());
     }
-
+    
     @Test
     @DisplayName("Statistics - Total Revenue")
     void testGetTotalRevenue() {
         paymentProcessor.processPayment("RES001", 5000.0, "4532015112830366", "123", "12/26");
         paymentProcessor.processPayment("RES002", 3000.0, "5105105105105100", "456", "01/27");
-
+        
         assertEquals(8000.0, paymentProcessor.getTotalRevenue());
     }
-
+    
     @Test
     @DisplayName("Statistics - Successful Payments Count")
     void testGetSuccessfulPayments() {
         paymentProcessor.processPayment("RES001", 5000.0, "4532015112830366", "123", "12/26");
         paymentProcessor.processPayment("RES002", 3000.0, "5105105105105100", "456", "01/27");
-
+        
         assertEquals(2, paymentProcessor.getSuccessfulPayments());
     }
-
+    
     @Test
     @DisplayName("Statistics - Failed Payments Count")
     void testGetFailedPayments() {
         Payment payment1 = paymentProcessor.processPayment("RES001", 5000.0, "4532015112830366", "123", "12/26");
         Payment payment2 = paymentProcessor.processPayment("RES002", 3000.0, "5105105105105100", "456", "01/27");
-
+        
         payment2.failPayment();
-
+        
         assertEquals(1, paymentProcessor.getFailedPayments());
     }
-
+    
     @Test
     @DisplayName("Statistics - Revenue Excludes Refunded Payments")
     void testGetTotalRevenue_ExcludesRefunded() {
         Payment payment1 = paymentProcessor.processPayment("RES001", 5000.0, "4532015112830366", "123", "12/26");
         Payment payment2 = paymentProcessor.processPayment("RES002", 3000.0, "5105105105105100", "456", "01/27");
-
+        
         paymentProcessor.refundPayment(payment1.getPaymentId());
-
+        
         assertEquals(3000.0, paymentProcessor.getTotalRevenue());
     }
-
+    
     // ==================== PAYMENT ID GENERATION TESTS ====================
-
+    
     @Test
     @DisplayName("Payment ID - Sequential Generation")
     void testPaymentIdGeneration() {
         Payment payment1 = paymentProcessor.processPayment("RES001", 1000.0, "4532015112830366", "123", "12/26");
         Payment payment2 = paymentProcessor.processPayment("RES002", 2000.0, "5105105105105100", "456", "01/27");
-
+        
         assertTrue(payment1.getPaymentId().startsWith("PAY"));
         assertTrue(payment2.getPaymentId().startsWith("PAY"));
         assertNotEquals(payment1.getPaymentId(), payment2.getPaymentId());
     }
-
+    
     // ==================== INTEGRATION TESTS ====================
-
+    
     @Test
     @DisplayName("Integration - Complete Payment Lifecycle")
     void testCompletePaymentLifecycle() {
@@ -607,25 +607,25 @@ public class PaymentProcessorTest {
             "RES_LIFECYCLE", 5000.0, "4532015112830366", "123", "12/26"
         );
         assertEquals("SUCCESS", payment.getStatus());
-
+        
         // Find payment
         Payment found = paymentProcessor.findPaymentById(payment.getPaymentId());
         assertNotNull(found);
         assertEquals(payment.getPaymentId(), found.getPaymentId());
-
+        
         // Get by reservation
         List<Payment> payments = paymentProcessor.getPaymentsByReservation("RES_LIFECYCLE");
         assertEquals(1, payments.size());
-
+        
         // Check statistics
         assertEquals(1, paymentProcessor.getTotalPayments());
         assertEquals(5000.0, paymentProcessor.getTotalRevenue());
-
+        
         // Refund payment
         boolean refunded = paymentProcessor.refundPayment(payment.getPaymentId());
         assertTrue(refunded);
         assertEquals("REFUNDED", payment.getStatus());
-
+        
         // Revenue should be zero after refund
         assertEquals(0.0, paymentProcessor.getTotalRevenue());
     }
